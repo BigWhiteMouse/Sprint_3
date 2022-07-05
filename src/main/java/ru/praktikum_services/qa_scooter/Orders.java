@@ -102,41 +102,5 @@ public class Orders {
         this.color = color;
     }
 
-    //создание заказа
-    public static Response createOrder(Orders order) {
-        return
-                given()
-                        .header("Content-type", "application/json")
-                        .and()
-                        .body(order)
-                        .when()
-                        .post("/api/v1/orders");
-    }
-
-    //получение номера трэка
-    public static int getTrack(Orders order) {
-        Gson gson = new Gson();
-        Response response = createOrder(order);
-        String message = response.body().asString();
-        OrderTrack answer = gson.fromJson(message, OrderTrack.class);
-        int track = answer.getTrack();
-        return track;
-
-    }
-
-    //отмена заказа
-    /*опытным путем пришла к выводу, что в документации ссылка на отмену заказа работает не совсем корректно,
-    рабочая ссылка - api/v1/orders/cancel?track=track
-     */
-    public static void cancelOrder(Orders order) {
-        int track = getTrack(order);
-        OrderTrack orderTrack = new OrderTrack(track);
-        given()
-                .header("Content-type", "application/json")
-                .and()
-                .body(orderTrack)
-                .when()
-                .put("/api/v1/orders/cancel?track=" + track);
-    }
 }
 

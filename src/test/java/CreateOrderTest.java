@@ -1,21 +1,16 @@
-import io.qameta.allure.Description;
-import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ru.praktikum_services.qa_scooter.Color;
-import ru.praktikum_services.qa_scooter.Courier;
 import ru.praktikum_services.qa_scooter.Orders;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.equalTo;
-import static ru.praktikum_services.qa_scooter.Courier.createCourier;
-import static ru.praktikum_services.qa_scooter.Orders.cancelOrder;
-import static ru.praktikum_services.qa_scooter.Orders.createOrder;
+
+import static ru.praktikum_services.qa_scooter.OrdersMethods.cancelOrder;
+import static ru.praktikum_services.qa_scooter.OrdersMethods.createOrder;
+import static org.apache.http.HttpStatus.*;
 
 @RunWith(Parameterized.class)
 
@@ -36,13 +31,9 @@ public class CreateOrderTest {
         };
     }
 
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru/";
-    }
-
     @Test
-    @DisplayName("Проверки: можно указать один из цветов — BLACK или GREY; можно указать оба цвета; можно совсем не указывать цвет")//
+    @DisplayName("Проверки: можно указать один из цветов — BLACK или GREY; можно указать оба цвета; можно совсем не указывать цвет")
+//
     public void CreateOrdersWithVariableAndNotRequiredColor() {
         Orders order = new Orders("Акакий", "Акакиев", "г.Москва, ул.Чижова, д.32, кв.1",
                 "Медведково", "8-963-555-44-33", 5, "2020-06-06",
@@ -50,7 +41,7 @@ public class CreateOrderTest {
 
         createOrder(order)
                 .then()
-                .statusCode(201);
+                .statusCode(SC_CREATED);
 
         cancelOrder(order);
     }

@@ -1,5 +1,4 @@
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,10 +7,10 @@ import org.junit.runners.Parameterized;
 import ru.praktikum_services.qa_scooter.Courier;
 
 import static org.hamcrest.Matchers.equalTo;
-import static ru.praktikum_services.qa_scooter.Courier.*;
+import static ru.praktikum_services.qa_scooter.CourierMethods.*;
+import static org.apache.http.HttpStatus.*;
 
 @RunWith(Parameterized.class)
-
 
 
 public class ShouldNotGetCourierLoginWithWrongLoginOrPasswordTest {
@@ -20,7 +19,7 @@ public class ShouldNotGetCourierLoginWithWrongLoginOrPasswordTest {
     private final String FIRST_NAME;
     Courier courierOne = new Courier("katya123", "123456", "Katerina");
 
-    public ShouldNotGetCourierLoginWithWrongLoginOrPasswordTest(String login, String password, String firstName){
+    public ShouldNotGetCourierLoginWithWrongLoginOrPasswordTest(String login, String password, String firstName) {
         this.LOGIN = login;
         this.PASSWORD = password;
         this.FIRST_NAME = firstName;
@@ -28,7 +27,7 @@ public class ShouldNotGetCourierLoginWithWrongLoginOrPasswordTest {
 
     @Parameterized.Parameters
     public static Object[] getCourierData() {
-        return new Object[][] {
+        return new Object[][]{
                 {"katya456", "89101112", null},
                 {"katya123", "89101112", null},
                 {"katya456", "1234567", null},
@@ -38,24 +37,23 @@ public class ShouldNotGetCourierLoginWithWrongLoginOrPasswordTest {
     }
 
     @Before
-    public void setUp() {
-        RestAssured.baseURI = "http://qa-scooter.praktikum-services.ru/";
+    public void createTestData() {
         createCourier(courierOne);
     }
 
     @Test
     @DisplayName("Проверки: если авторизоваться под несуществующим пользователем, запрос возвращает ошибку;" +
             "система вернёт ошибку, если неправильно указать логин или пароль;")
-    public void ShouldNotGetCourierLoginWithWrongLoginOrPassword(){
-        Courier courierTwo = new Courier(LOGIN,PASSWORD,FIRST_NAME);
+    public void ShouldNotGetCourierLoginWithWrongLoginOrPassword() {
+        Courier courierTwo = new Courier(LOGIN, PASSWORD, FIRST_NAME);
 
         сourierLogin(courierTwo)
-                .then().statusCode(404)
+                .then().statusCode(SC_NOT_FOUND)
                 .and().assertThat().body("message", equalTo("Учетная запись не найдена"));
     }
 
     @After
-    public void deleteTestData(){
+    public void deleteTestData() {
         deleteCourier(courierOne);
     }
 }
